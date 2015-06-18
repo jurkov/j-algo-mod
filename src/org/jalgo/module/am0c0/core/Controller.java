@@ -84,7 +84,7 @@ public class Controller {
 	}
 	
 	/**
-	 * Add Slider for Text zoom
+	 * Add slider to toolbar for text zoom
 	 */
 	private void createToolBar(){
 		JSlider zoom = new JSlider(0,40);
