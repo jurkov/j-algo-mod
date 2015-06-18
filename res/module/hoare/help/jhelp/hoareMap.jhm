@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE map PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp Map Version 1.0//EN" "http://java.sun.com/products/javahelp/map_1_0.dtd">
+<map version="1.0">
+	<mapID xml:lang="de"/>
+
+	<!-- Hoare			 -->
+	<mapID target="hoare" 	    		 	url="../html/data/overview.htm"/>
+
+	<mapID target="hoare.overview" 	    	url="../html/data/overview.htm"/>
+	<mapID target="hoare.overview.einleitung"  	url="../html/data/overview.htm#einleitung"/>
+	<mapID target="hoare.overview.funktionen" 	url="../html/data/overview.htm#funktionen"/>
+	
+	<mapID target="hoare.screen"			url="../html/data/screen.htm"/>
+	<mapID target="hoare.screen.welcome"	url="../html/data/screen.htm#welcome"/>
+	<mapID target="hoare.screen.toolbar"	url="../html/data/screen.htm#toolbar"/>
+	<mapID target="hoare.screen.menu"		url="../html/data/screen.htm#menu"/>
+	<mapID target="hoare.screen.tasten"		url="../html/data/screen.htm#tasten"/>
+	
+	<mapID target="hoare.editors.source"		url="../html/data/sourcecode_editor.htm"/>
+	<mapID target="hoare.editors.formula"	url="../html/data/formula_editor.htm"/>
+	
+	<mapID target="hoare.aufbau"			url="../html/data/aufbau.htm"/>
+	<mapID target="hoare.aufbau.knotenkanten"	url="../html/data/aufbau.htm#knotenkanten"/>
+	<mapID target="hoare.aufbau.impl"		url="../html/data/aufbau.htm#impl"/>
+	<mapID target="hoare.aufbau.colour"		url="../html/data/aufbau.htm#colour"/>
+	
+	<mapID target="hoare.usage"				url="../html/data/usage.htm"/>
+	<mapID target="hoare.usage.laden"		url="../html/data/usage.htm#laden"/>
+	<mapID target="hoare.usage.regel"		url="../html/data/usage.htm#regel"/>
+	<mapID target="hoare.usage.edit"		url="../html/data/usage.htm#edit"/>
+	<mapID target="hoare.usage.bsp"			url="../html/data/usage.htm#bsp"/>
+	
+	<mapID target="hoare.hoare"				url="../html/data/hoare.htm"/>
+
+</map>
