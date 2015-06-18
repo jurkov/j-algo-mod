@@ -565,7 +565,7 @@ public class SimulationView extends View {
 		am0code.setFont(new Font(x.getName(),x.getStyle(),12+size));
 		x = commandHint.getFont();
 		commandHint.setFont(new Font(x.getName(),x.getStyle(),12+size));
-		x = commandHint.getFont();
-		codeTable.setFont(new Font(x.getName(),x.getStyle(),12+size));
+		//x = codeTable.getFont();
+		//codeTable.setFont(new Font(x.getName(),x.getStyle(),12+size));
 	}
 }
