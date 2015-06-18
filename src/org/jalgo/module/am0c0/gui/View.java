@@ -82,4 +82,10 @@ public abstract class View extends JPanel {
 		scrollPane.setMaximumSize(new Dimension(200, 200));
 		return scrollPane;
 	}
+	
+	/**
+	 * @param size
+	 * 			sets the size of all important textareas
+	 */
+	abstract public void setFontSize(int size);
 }

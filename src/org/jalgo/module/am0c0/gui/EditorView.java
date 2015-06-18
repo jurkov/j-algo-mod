@@ -419,4 +419,12 @@ public class EditorView extends View {
 			logConsole.setFont(GuiConstants.STANDARDFONT_SERIF);
 		}
 	}
+	
+	@Override
+	public void setFontSize(int size) {
+		Font x = codeField.getFont();
+		codeField.setFont(new Font(x.getName(),x.getStyle(),12+size));
+		x = logConsole.getFont();
+		logConsole.setFont(new Font(x.getName(),x.getStyle(),12+size));
+	}
 }

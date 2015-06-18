@@ -25,6 +25,7 @@ package org.jalgo.module.am0c0.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -293,7 +294,8 @@ public class SimulationView extends View {
 		am0code.setMinimumSize(new Dimension(160, 300));
 
 		setAM0CodeListeners();
-
+		
+		next.setEnabled(false);
 		prev.setEnabled(false);
 		clear.setEnabled(false);
 
@@ -403,6 +405,7 @@ public class SimulationView extends View {
 							prev.setEnabled(true);
 						}
 					}
+					
 				} else {
 					amTableModel.showLastPage();
 					if (!simController.nextStep()) {
@@ -453,6 +456,7 @@ public class SimulationView extends View {
 					simController.addResultToTable(m, 0);
 					clear.setEnabled(true);
 					config.setEnabled(false);
+					next.setEnabled(true);
 				}
 			}
 			if (arg0.getSource() == clear) {
@@ -537,7 +541,7 @@ public class SimulationView extends View {
 		am0code.setCaretPosition(am0code.getLineStartOffset(0));
 		am0code.setLineMarker(0, 0);
 		simController.clear();
-		next.setEnabled(true);
+		next.setEnabled(false);
 		prev.setEnabled(false);
 		doIt.setEnabled(true);
 	}
@@ -553,5 +557,15 @@ public class SimulationView extends View {
 			commandHint.setFont(GuiConstants.STANDARDFONT_SERIF);
 			codeTable.setFont(GuiConstants.STANDARDFONT);
 		}
+	}
+	
+	@Override
+	public void setFontSize(int size) {
+		Font x = am0code.getFont();
+		am0code.setFont(new Font(x.getName(),x.getStyle(),12+size));
+		x = commandHint.getFont();
+		commandHint.setFont(new Font(x.getName(),x.getStyle(),12+size));
+		x = commandHint.getFont();
+		codeTable.setFont(new Font(x.getName(),x.getStyle(),12+size));
 	}
 }

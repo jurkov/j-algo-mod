@@ -24,11 +24,15 @@ package org.jalgo.module.am0c0.core;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Dimension;
 
 import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.JToolBar;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.jalgo.main.gui.JAlgoGUIConnector;
 import org.jalgo.module.am0c0.gui.EditorView;
@@ -69,6 +73,7 @@ public class Controller {
 		setViews();
 		showEditor();
 		createMenuBar();
+		createToolBar();
 	}
 
 	/**
@@ -76,6 +81,27 @@ public class Controller {
 	 */
 	private void createMenuBar() {
 		menuPanel.add(new PresentationAction(this));
+	}
+	
+	/**
+	 * Add Slider for Text zoom
+	 */
+	private void createToolBar(){
+		JSlider zoom = new JSlider(0,40);
+		zoom.setValue(0);
+		zoom.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				JSlider s = (JSlider) e.getSource();
+				editor.getView().setFontSize(s.getValue());
+				simulator.getView().setFontSize(s.getValue());
+				transformator.getView().setFontSize(s.getValue());
+				
+			}
+		});
+		zoom.setMaximumSize(new Dimension(128, 128));
+		toolbarPanel.add(zoom);
 	}
 
 	/**

@@ -25,6 +25,7 @@ package org.jalgo.module.am0c0.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -347,6 +348,18 @@ public class TransformationView extends View {
 			ruleText.setFont(GuiConstants.STANDARDFONT_SERIF);
 			symbolTable.setFont(GuiConstants.STANDARDFONT);
 		}
+	}
+	
+	@Override
+	public void setFontSize(int size) {
+		Font x = codeEditor.getFont();
+		codeEditor.setFont(new Font(x.getName(),x.getStyle(),12+size));
+		x = previewText.getFont();
+		previewText.setFont(new Font(x.getName(),x.getStyle(),12+size));
+		x = ruleText.getFont();
+		ruleText.setFont(new Font(x.getName(),x.getStyle(),12+size));
+		x = symbolTable.getFont();
+		symbolTable.setFont(new Font(x.getName(),x.getStyle(),12+size));
 	}
 
 	private class ButtonHandler implements ActionListener, MouseListener {
