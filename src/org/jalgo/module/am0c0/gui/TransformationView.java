@@ -358,8 +358,8 @@ public class TransformationView extends View {
 		previewText.setFont(new Font(x.getName(),x.getStyle(),12+size));
 		x = ruleText.getFont();
 		ruleText.setFont(new Font(x.getName(),x.getStyle(),12+size));
-		x = symbolTable.getFont();
-		symbolTable.setFont(new Font(x.getName(),x.getStyle(),12+size));
+		//x = symbolTable.getFont();
+		//symbolTable.setFont(new Font(x.getName(),x.getStyle(),12+size));
 	}
 
 	private class ButtonHandler implements ActionListener, MouseListener {
