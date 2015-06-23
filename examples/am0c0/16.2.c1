@@ -1,0 +1,16 @@
+#include <stdio.h>
+int a, b;
+
+void double(int x, int *y)
+{ if(x > 0)
+  { double(x - 1, y)
+    *y = *y + 2;
+  } else
+    *y = 0;
+}
+
+void main()
+{ scanf("%i", &a);
+  double(a, &b);
+  printf("%d", b);
+}
