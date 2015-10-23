@@ -608,7 +608,7 @@ public class Simulator implements UpdateEventCreater<Integer> {
 					currentState = new Simulating();
 					view.getToolbar().setRunButtonToStop();
 					view.getToolbar().setButtonStatus(ButtonType.INITIAL, true);
-					view.getToolbar().setButtonStatus(ButtonType.FORWARD, true);
+					view.getToolbar().setButtonStatus(ButtonType.FORWARD, false);
 					view.getToolbar().setButtonStatus(ButtonType.ONESTEP, true);
 					view.getToolbar().setButtonStatus(ButtonType.TOP, true);
 					view.getToolbar().setButtonStatus(ButtonType.BOTTOM, true);
