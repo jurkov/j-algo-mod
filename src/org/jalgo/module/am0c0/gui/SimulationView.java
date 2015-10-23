@@ -50,6 +50,7 @@ import org.jalgo.module.am0c0.core.Simulator;
 import org.jalgo.module.am0c0.gui.GuiConstants;
 import org.jalgo.module.am0c0.gui.View;
 import org.jalgo.module.am0c0.gui.jeditor.JEditor;
+import org.jalgo.module.am0c0.gui.jeditor.JEditor.LineType;
 import org.jalgo.module.am0c0.gui.jeditor.jedit.tokenmarker.AM0TokenMarker;
 import org.jalgo.module.am0c0.model.am0.AM0Program;
 import org.jalgo.module.am0c0.model.am0.MachineConfiguration;
@@ -129,6 +130,7 @@ public class SimulationView extends View {
 	 *            The new am0 program to show in simulation.
 	 */
 	public void setAM0Program(AM0Program am) {
+		am0code.setLineType(LineType.NORMAL);
 		am0code.updateModel(am);
 		am0code.setCaretPosition(am0code.getLineStartOffset(0));
 		am0code.setLineMarker(0, 0);
@@ -565,7 +567,8 @@ public class SimulationView extends View {
 		am0code.setFont(new Font(x.getName(),x.getStyle(),12+size));
 		x = commandHint.getFont();
 		commandHint.setFont(new Font(x.getName(),x.getStyle(),12+size));
-		//x = codeTable.getFont();
-		//codeTable.setFont(new Font(x.getName(),x.getStyle(),12+size));
+		x = codeTable.getFont();
+		codeTable.setFont(new Font(x.getName(),x.getStyle(),12+size));
+		codeTable.setRowHeight(28+size);
 	}
 }

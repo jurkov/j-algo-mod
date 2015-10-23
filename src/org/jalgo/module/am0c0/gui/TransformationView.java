@@ -52,6 +52,7 @@ import org.jalgo.module.am0c0.core.Transformator;
 import org.jalgo.module.am0c0.core.Transformator.TransformationState;
 import org.jalgo.module.am0c0.gui.jeditor.JEditor;
 import org.jalgo.module.am0c0.gui.jeditor.JEditor.ExInteger;
+import org.jalgo.module.am0c0.gui.jeditor.JEditor.LineType;
 import org.jalgo.module.am0c0.gui.jeditor.jedit.tokenmarker.CTransTokenMarker;
 import org.jalgo.module.am0c0.model.AddressException;
 import org.jalgo.module.am0c0.model.CodeObject;
@@ -70,8 +71,9 @@ import org.jalgo.module.am0c0.model.c0.trans.SymbolTable;
 public class TransformationView extends View {
 	private static final long serialVersionUID = 1L;
 	private JButton backToEditorButton, stepBackButton, applyButton, stepToEndButton, simulateButton;
+	private JButton matchButton, replaceToAm0Button;
 	private JSplitPane hSplitPane, vSplitPane;
-	private JPanel leftPanel, rightPanel, buttonPanel, allButtons;
+	private JPanel leftPanel, rightPanel, buttonPanel, allButtons, buttonPanelTrans, buttonPanelLinear;
 	private JTable symbolTable;
 	private DefaultTableModel symbolTableModel;
 	private JEditorPane previewText, ruleText;
@@ -82,6 +84,7 @@ public class TransformationView extends View {
 
 	private int markingStart;
 	private int markingEnd;
+	private int iStartnumber;
 	private ExInteger markingIndex;
 
 	/**
@@ -94,6 +97,7 @@ public class TransformationView extends View {
 	public TransformationView(Transformator transController) {
 		markingStart = -1;
 		markingEnd = -1;
+		iStartnumber = 1;
 		markingIndex = new ExInteger(-1);
 
 		initComponents();
@@ -131,7 +135,13 @@ public class TransformationView extends View {
 		rightPanel.add(ruleScrollPane);
 
 		buttonPanel = new JPanel();
-		buttonPanel.setLayout(new GridLayout(1, 3));
+		buttonPanel.setLayout(new GridLayout(0, 1));
+		
+		buttonPanelTrans = new JPanel();
+		buttonPanelTrans.setLayout(new GridLayout(1, 3));
+		
+		buttonPanelLinear = new JPanel();
+		buttonPanelLinear.setLayout(new GridLayout(1, 2));
 
 		stepBackButton = new JButton(Messages.getString("am0c0", "TransformationView.8")); //$NON-NLS-1$
 		stepBackButton.setIcon(new ImageIcon(Messages.getResourceURL("am0c0", GuiConstants.PREVIOUS_ICON))); //$NON-NLS-1$
@@ -146,16 +156,28 @@ public class TransformationView extends View {
 
 		simulateButton = new JButton(Messages.getString("am0c0", "TransformationView.14")); //$NON-NLS-1$
 		simulateButton.setIcon(new ImageIcon(Messages.getResourceURL("am0c0", GuiConstants.RUN_ICON))); //$NON-NLS-1$
-
+		
+		matchButton = new JButton("Match");
+		matchButton.setIcon(new ImageIcon(Messages.getResourceURL("am0c0", GuiConstants.RUN_ICON)));
+		
+		replaceToAm0Button = new JButton("Replace");
+		replaceToAm0Button.setIcon(new ImageIcon(Messages.getResourceURL("am0c0", GuiConstants.LAST_ICON)));
+		
 		backToEditorButton = new JButton(Messages.getString("am0c0", "TransformationView.16")); //$NON-NLS-1$
 		backToEditorButton.setIcon(new ImageIcon(Messages.getResourceURL("am0c0", GuiConstants.BACK_TO_EDITOR_ICON))); //$NON-NLS-1$
 
+		buttonPanelTrans.add(stepBackButton);
+		buttonPanelTrans.add(applyButton);
+		buttonPanelTrans.add(stepToEndButton);
+		
+		buttonPanelLinear.add(matchButton);
+		buttonPanelLinear.add(replaceToAm0Button);
+		
+		buttonPanel.add(buttonPanelTrans);
+		buttonPanel.add(buttonPanelLinear);
+		
 		allButtons = new JPanel();
 		allButtons.setLayout(new GridLayout(1, 3));
-
-		buttonPanel.add(stepBackButton);
-		buttonPanel.add(applyButton);
-		buttonPanel.add(stepToEndButton);
 		
 		allButtons.add(backToEditorButton, BorderLayout.WEST);
 		allButtons.add(new JPanel());
@@ -182,6 +204,7 @@ public class TransformationView extends View {
 		p.setLayout(new BorderLayout());
 		p.add(codeEditor, BorderLayout.CENTER);
 		p.add(buttonPanel, BorderLayout.SOUTH);
+		
 		hSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, p, previewScrollPane);
 
 		leftPanel.add(hSplitPane, BorderLayout.CENTER);
@@ -260,12 +283,16 @@ public class TransformationView extends View {
 		applyButton.addActionListener(buttonHandler);
 		stepToEndButton.addActionListener(buttonHandler);
 		simulateButton.addActionListener(buttonHandler);
+		matchButton.addActionListener(buttonHandler);
+		replaceToAm0Button.addActionListener(buttonHandler);
 
 		backToEditorButton.addMouseListener(buttonHandler);
 		stepBackButton.addMouseListener(buttonHandler);
 		applyButton.addMouseListener(buttonHandler);
 		stepToEndButton.addMouseListener(buttonHandler);
-		simulateButton.addMouseListener(buttonHandler);
+		simulateButton.addMouseListener(buttonHandler);		
+		matchButton.addMouseListener(buttonHandler);
+		replaceToAm0Button.addMouseListener(buttonHandler);
 	}
 
 	@Override
@@ -328,6 +355,7 @@ public class TransformationView extends View {
 		/**
 		 * TODO: clear/revert everything here
 		 */
+		codeEditor.setLineType(LineType.NORMAL);
 		codeEditor.updateModel(c0TransProgram);
 		updateGUI();
 	}
@@ -358,8 +386,9 @@ public class TransformationView extends View {
 		previewText.setFont(new Font(x.getName(),x.getStyle(),12+size));
 		x = ruleText.getFont();
 		ruleText.setFont(new Font(x.getName(),x.getStyle(),12+size));
-		//x = symbolTable.getFont();
-		//symbolTable.setFont(new Font(x.getName(),x.getStyle(),12+size));
+		x = symbolTable.getFont();
+		symbolTable.setFont(new Font(x.getName(),x.getStyle(),12+size));
+		symbolTable.setRowHeight(28+size);
 	}
 
 	private class ButtonHandler implements ActionListener, MouseListener {
@@ -376,6 +405,7 @@ public class TransformationView extends View {
 						AM0Program am0program = transController.getAM0Program();
 						transController.getController().getEditor().setAM0Program(am0program);
 						// this must be done to remove the model from JEditor and make it editable
+						transController.getController().getEditor().getView().getJEditor().setLineType(LineType.NORMAL);
 						transController.getController().getEditor().getView().getJEditor().updateModel(null);
 					} catch (AddressException arg) {
 						JOptionPane.showMessageDialog(transController.getView(), arg
@@ -411,9 +441,14 @@ public class TransformationView extends View {
 
 			if (e.getSource() == stepToEndButton) {
 				if (transController.getState() == TransformationState.TS_FINISHED)
+				{
+					codeEditor.setLineType(LineType.NORMAL);
+					codeEditor.updateModel(transController.getC0TransProgram());
+					matchButton.setEnabled(true);
 					throw new IllegalStateException(
 							Messages.getString("am0c0", "TransformationView.33")); //$NON-NLS-1$
-
+				}
+				
 				try {
 					applyAllStatements();
 				} catch (IllegalArgumentException arg) {
@@ -435,6 +470,7 @@ public class TransformationView extends View {
 					JOptionPane.showMessageDialog(transController.getView(), "There is no previous step!", "Error", //$NON-NLS-1$ //$NON-NLS-2$
 							JOptionPane.ERROR_MESSAGE);
 				}
+				codeEditor.setLineType(LineType.NORMAL);
 				updateSymbolTable();
 				updateGUI();
 			}
@@ -452,6 +488,66 @@ public class TransformationView extends View {
 						.getMessage(), Messages.getString("am0c0", "TransformationView.6"), JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$
 				}
 				transController.getController().showSimulator();
+			}
+			
+			if (e.getSource() == matchButton)
+			{
+				if (transController.getState() != TransformationState.TS_FINISHED)
+					throw new IllegalStateException(
+							"Lineaisation is only possible in state FINISHED. Internal program error!");
+				
+				/*String sStartNumber = JOptionPane.showInputDialog("Please input first line number: ",iStartnumber);
+				iStartnumber = Integer.parseInt(sStartNumber);
+				
+				if(iStartnumber<1)
+					iStartnumber = 1;
+				
+				codeEditor.setFirstLine(iStartnumber);*/
+				codeEditor.setLineType(LineType.MATCH);
+				codeEditor.updateModel(transController.getC0TransProgram());
+				updateGUI();
+				
+				replaceToAm0Button.setEnabled(true);
+			}
+			
+			if (e.getSource() == replaceToAm0Button)
+			{
+				if (transController.getState() != TransformationState.TS_FINISHED)
+					throw new IllegalStateException(
+							"Lineaisation is only possible in state FINISHED. Internal program error!");
+				
+				try {				
+					codeEditor.setLineType(LineType.NORMAL);
+					codeEditor.updateModel(transController.getAM0Program());
+					
+				} catch (AddressException arg) {
+					JOptionPane.showMessageDialog(transController.getView(), arg
+						.getMessage(), Messages.getString("am0c0", "TransformationView.6"), JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$
+				}
+				
+				updateGUI();	
+				matchButton.setEnabled(false);
+				replaceToAm0Button.setEnabled(false);
+				
+				//TODO Remove it if not needed anymore
+				/*if(replaceToAm0Button.getText() == "Replace")
+				{
+					//This command activates the linear numbers for jalgo
+					codeEditor.setFirstLine(10);
+					codeEditor.setLineType(LineType.REPLACE);
+					codeEditor.updateModel(transController.getC0TransProgram());
+					updateGUI();
+					replaceToAm0Button.setText("Undo Replace");
+				}
+				else
+				{
+					//This command deactivates the linear numbers for jalgo
+					codeEditor.setLineType(LineType.NORMAL);
+					codeEditor.updateModel(transController.getC0TransProgram());
+					updateGUI();
+					replaceToAm0Button.setText("Replace");
+					
+				}*/
 			}
 		}
 
@@ -506,9 +602,11 @@ public class TransformationView extends View {
 			markingStart = -1;
 			markingEnd = -1;
 			applyButton.setEnabled(false);
-			stepToEndButton.setEnabled(false);
+			stepToEndButton.setEnabled(true);
 			simulateButton.setEnabled(true);
 			stepBackButton.setEnabled(true);
+			matchButton.setEnabled(true);
+			replaceToAm0Button.setEnabled(false);
 			break;
 		case TS_PREVIEW:
 			codeEditor.setCodeHighlightMode(false);
@@ -516,6 +614,8 @@ public class TransformationView extends View {
 			stepToEndButton.setEnabled(true);
 			simulateButton.setEnabled(false);
 			stepBackButton.setEnabled(true);
+			matchButton.setEnabled(false);
+			replaceToAm0Button.setEnabled(false);
 			break;
 		case TS_WAITING:
 			codeEditor.setCodeHighlightMode(true);
@@ -527,6 +627,8 @@ public class TransformationView extends View {
 			stepToEndButton.setEnabled(true);
 			simulateButton.setEnabled(false);
 			stepBackButton.setEnabled(true);
+			matchButton.setEnabled(false);
+			replaceToAm0Button.setEnabled(false);
 			break;
 		case TS_WAITING_FIRST:
 			codeEditor.setCodeHighlightMode(true);
@@ -538,6 +640,8 @@ public class TransformationView extends View {
 			stepToEndButton.setEnabled(true);
 			simulateButton.setEnabled(false);
 			stepBackButton.setEnabled(false);
+			matchButton.setEnabled(false);
+			replaceToAm0Button.setEnabled(false);
 			break;
 		case TS_PREVIEW_FIRST:
 			codeEditor.setCodeHighlightMode(false);
@@ -545,8 +649,10 @@ public class TransformationView extends View {
 			stepToEndButton.setEnabled(true);
 			simulateButton.setEnabled(false);
 			stepBackButton.setEnabled(false);
+			matchButton.setEnabled(false);
+			replaceToAm0Button.setEnabled(false);
 			break;
-
+		
 		}
 		codeEditor.setLineMarker(markingStart, markingEnd);
 	}

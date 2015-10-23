@@ -27,6 +27,7 @@ import org.jalgo.module.am0c0.gui.jeditor.jedit.SyntaxStyle;
 import org.jalgo.module.am0c0.gui.jeditor.jedit.TextAreaDefaults;
 import org.jalgo.module.am0c0.gui.jeditor.jedit.tokenmarker.Token;
 import org.jalgo.module.am0c0.gui.jeditor.jedit.tokenmarker.TokenMarker;
+import org.jalgo.module.am0c0.model.Address;
 import org.jalgo.module.am0c0.model.CodeObject;
 import org.jalgo.module.am0c0.model.GenericProgram;
 
@@ -91,6 +92,12 @@ public class JEditor extends JEditTextArea {
 	protected JFileChooser fileChooser;
 
 	protected EnhancedPainter enhancedPainter;
+	
+	public enum LineType {
+		NORMAL, PREVIEW, MATCH, REPLACE
+	}
+	
+	protected LineType linetype;
 
 	protected Observer observer;
 
@@ -162,7 +169,9 @@ public class JEditor extends JEditTextArea {
 		setBeamerMode(false);
 
 		setCodeHighlightMode(model != null);
-
+		
+		this.linetype = LineType.NORMAL;
+		
 		updateModel(model);
 	}
 	
@@ -309,19 +318,76 @@ public class JEditor extends JEditTextArea {
 	public void updateModel(GenericProgram<? extends CodeObject> model) {
 		this.model = model;
 
+		
 		if (model != null) {
 			StringBuffer buf = new StringBuffer();
 			for (CodeObject codeObj : model)
-				buf.append(codeObj.getCodeText() + "\n"); //$NON-NLS-1$
+			{
+				String code = codeObj.getCodeText();
+				
+				//TODO Remove it if not needed anymore
+				if(this.linetype==LineType.REPLACE)
+				{
+					String tmp  = code.replace("JMC ", "");
+					tmp  = tmp.replace("JMP ", "");
+					tmp = tmp.replace(";", "");
+					int line = getLineNumberToAddress(tmp, model);
+					
+					//This will replace the tree address with linear address
+					if(line>=0)
+						code = code.replace(tmp, String.valueOf(line+1));
+				}
+				buf.append(code + "\n"); //$NON-NLS-1$
+			}
 			setText(buf.toString());
 		}
 
 		setEditable(model == null);
+		enhancedPainter.setLineType(this.linetype);
 		enhancedPainter.refreshLineNumbersWidth();
 
 		repaint();
 	}
-
+	
+	/**
+	 * returns the line Number of the address parameter
+	 * 
+	 * @param addres
+	 * @param model
+	 *            new value for the code model. null will disable the underlying
+	 *            code model
+	 */
+	public int getLineNumberToAddress(String address,GenericProgram<? extends CodeObject> model)
+	{
+		int ret = -1;
+		
+		for(int i = 0;i<model.size(); i=i+1)
+		{
+			if(model.get(i) != null )
+			{
+				if(model.get(i).getAddress()!= null)
+				{
+					//JOptionPane.showMessageDialog(null, "'" + model.get(i).getAddress().toString() + "' '" + address + "'");
+					if(model.get(i).getAddress().toString().equals(address))
+					{
+						ret = i;
+						break;
+					}
+				}
+			}
+		}
+		
+		return ret;
+	}
+	
+	/**
+	 * sets linetype
+	 * @param linetype The type of line (linear or not)
+	 */
+	public void setLineType(LineType linetype) {
+		this.linetype = linetype;
+	}
+	
 	/**
 	 * checks whether an underlying code model has been set or not
 	 * 

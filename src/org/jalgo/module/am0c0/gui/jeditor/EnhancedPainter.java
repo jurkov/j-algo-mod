@@ -8,9 +8,11 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 
+import javax.swing.JOptionPane;
 import javax.swing.text.Segment;
 
 import org.jalgo.module.am0c0.gui.jeditor.JEditor.ExInteger;
+import org.jalgo.module.am0c0.gui.jeditor.JEditor.LineType;
 import org.jalgo.module.am0c0.gui.jeditor.jedit.*;
 import org.jalgo.module.am0c0.gui.jeditor.jedit.tokenmarker.*;
 import org.jalgo.module.am0c0.model.CodeObject;
@@ -128,7 +130,10 @@ public class EnhancedPainter extends TextAreaPainter {
 	private boolean lineNumbersVisible;
 	private Marker marker;
 	private boolean markerVisible;
+	
 	Segment currentLine;
+	
+	private LineType linetype; //for linearline
 
 	/**
 	 * constructor
@@ -147,6 +152,7 @@ public class EnhancedPainter extends TextAreaPainter {
 		lineNumbersVisible = true;
 		LINE_NUMBERS_WIDTH = getFm().stringWidth("000");
 		lineNumbersWidth = LINE_NUMBERS_WIDTH + LINE_NUMBERS_OFFSET;
+		linetype = LineType.NORMAL;
 	}
 
 	/**
@@ -217,7 +223,9 @@ public class EnhancedPainter extends TextAreaPainter {
 	public void updateLineNumbersWidth(String s) {
 		FontMetrics fm = getFm();
 		if (getLineNumbersWidth() - LINE_NUMBERS_OFFSET < fm.stringWidth(s))
+		{
 			setLineNumbersWidth(fm.stringWidth(s));
+		}
 	}
 
 	/**
@@ -286,6 +294,7 @@ public class EnhancedPainter extends TextAreaPainter {
 		// update to the largest necessary line number width before
 		// painting lines
 		setLineNumbersWidth(0);
+		
 		for (int line = 1; line <= textArea.getLineCount(); line++) {
 			if (!((JEditor) textArea).hasModel()) {
 				String lineNumber = String.valueOf(line);
@@ -293,14 +302,14 @@ public class EnhancedPainter extends TextAreaPainter {
 			} else {
 				ExInteger startLine = new ExInteger(0);
 				CodeObject codeObject = ((JEditor) textArea).getCodeFromLine(line - 1, startLine, null);
-
+				updateLineNumbersWidth("         ");
 				// if the codeObject is null, we might be at the last line
 				// which does not have to have a codeObject
 				// so it is fine not to print a line number here
 				if (codeObject != null && line - 1 == startLine.getValue() && codeObject.getAddress() != null
 						&& codeObject.getAddress().isVisible()) {
 					String lineAddress = codeObject.getAddress().toString();
-					updateLineNumbersWidth(lineAddress);
+					updateLineNumbersWidth(lineAddress+ "   ");
 				}
 			}
 		}
@@ -348,7 +357,7 @@ public class EnhancedPainter extends TextAreaPainter {
 		}
 	}
 
-	protected void paintLineNumber(Graphics gfx, int line, int y) {
+	protected void paintLineNumber(Graphics gfx, int line, int y, LineType linetype) {
 		Color color = gfx.getColor();
 		Font defaultFont = gfx.getFont();
 
@@ -361,12 +370,12 @@ public class EnhancedPainter extends TextAreaPainter {
 		gfx.drawLine(lineNumbersWidth - 1, y, lineNumbersWidth - 1, y + getFm().getHeight());
 
 		gfx.setColor(new Color(100, 100, 100));
-
+		
 		// prints default line numbers or CodeObject addresses
 		if (!((JEditor) textArea).hasModel()) {
 			if (line <= textArea.getLineCount()) {
 				String lineNumber = String.valueOf(line);
-
+				
 				gfx.drawString(lineNumber, lineNumbersWidth - LINE_NUMBERS_OFFSET - getFm().stringWidth(lineNumber), y);
 			}
 		} else {
@@ -376,12 +385,87 @@ public class EnhancedPainter extends TextAreaPainter {
 			// if the codeObject is null, we might be at the last line which
 			// does not have to have a codeObject
 			// so it is fine not to print a line number here
-			if (codeObject != null && line - 1 == startLine.getValue() && codeObject.getAddress() != null
-					&& codeObject.getAddress().isVisible()) {
-				String lineAddress = codeObject.getAddress().toString();
 
-				gfx.drawString(lineAddress, lineNumbersWidth - LINE_NUMBERS_OFFSET - getFm().stringWidth(lineAddress),
-						y);
+			switch(linetype)
+			{
+				case NORMAL:
+					if (codeObject != null && line - 1 == startLine.getValue() && codeObject.getAddress() != null
+							&& codeObject.getAddress().isVisible()) {
+						String lineAddress = codeObject.getAddress().toString();
+						updateLineNumbersWidth(lineAddress);
+						gfx.drawString(lineAddress, lineNumbersWidth - LINE_NUMBERS_OFFSET - getFm().stringWidth(lineAddress),
+									y);
+					}
+					break;
+				
+				case PREVIEW:
+					if (codeObject != null && line - 1 == startLine.getValue() && codeObject.getAddress() != null
+							&& codeObject.getAddress().isVisible()) {
+						
+						String lineNumber = String.valueOf(line);
+						gfx.setColor(Color.RED);
+						gfx.setFont(defaultFont.deriveFont(Font.BOLD));
+						gfx.drawString(lineNumber, 0,
+								y);
+						
+						String lineAddress = codeObject.getAddress().toString();
+						gfx.setColor(Color.LIGHT_GRAY);
+						gfx.setFont(defaultFont.deriveFont(Font.PLAIN));
+						gfx.drawString(lineAddress, lineNumbersWidth - LINE_NUMBERS_OFFSET - getFm().stringWidth(lineAddress),
+								y);
+					}
+					else
+					{
+						if (codeObject != null)
+						{
+							String lineNumber = String.valueOf(line);
+							gfx.setColor(Color.RED);
+							gfx.setFont(defaultFont.deriveFont(Font.BOLD));
+							gfx.drawString(lineNumber, 0,
+									y);
+						}
+					}
+					break;
+				
+				case MATCH:
+					if (codeObject != null && line - 1 == startLine.getValue() && codeObject.getAddress() != null
+							&& codeObject.getAddress().isVisible()) {
+						
+						String lineNumber = String.valueOf(line);
+						gfx.setColor(Color.RED);
+						gfx.setFont(defaultFont.deriveFont(Font.BOLD));
+						gfx.drawString(lineNumber, 0,
+								y);
+						
+						String lineAddress = codeObject.getAddress().toString();
+						gfx.setColor(Color.LIGHT_GRAY);
+						gfx.setFont(defaultFont.deriveFont(Font.PLAIN));
+						gfx.drawString(lineAddress, lineNumbersWidth - LINE_NUMBERS_OFFSET - getFm().stringWidth(lineAddress),
+								y);
+					}
+					else
+					{
+						if (codeObject != null)
+						{
+							String lineNumber = String.valueOf(line);
+							gfx.setColor(Color.RED);
+							gfx.setFont(defaultFont.deriveFont(Font.BOLD));
+							gfx.drawString(lineNumber, 0,
+									y);
+						}
+					}
+					break;
+				
+				case REPLACE:
+					if (codeObject != null)
+					{
+						String lineAddress = String.valueOf(line);
+						updateLineNumbersWidth(lineAddress);
+						gfx.drawString(lineAddress, lineNumbersWidth - LINE_NUMBERS_OFFSET - getFm().stringWidth(lineAddress),
+								y);
+					}
+					break;
+					
 			}
 		}
 
@@ -419,7 +503,8 @@ public class EnhancedPainter extends TextAreaPainter {
 
 		// draw line numbers
 		if (lineNumbersVisible)
-			paintLineNumber(gfx, line, y);
+			paintLineNumber(gfx, line, y, linetype);
+			
 		gfx.setFont(defaultFont);
 	}
 
@@ -482,5 +567,23 @@ public class EnhancedPainter extends TextAreaPainter {
 				gfx.fillRect(x1 > x2 ? (x2) : (x1), y, x1 > x2 ? (x1 - x2) : (x2 - x1), height);
 			}
 		}
+	}
+	
+	/**
+	 * sets line type
+	 * @param linetype
+	 */
+	public void setLineType(LineType linetype)
+	{
+		this.linetype = linetype;
+	}
+	
+	/**
+	 * returns line type
+	 * @return
+	 */
+	public LineType getLineType()
+	{
+		return this.linetype;
 	}
 }

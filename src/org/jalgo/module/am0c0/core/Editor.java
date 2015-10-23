@@ -33,6 +33,7 @@ import org.jalgo.module.am0c0.parser.am0.AM0Parser;
 import org.jalgo.module.am0c0.parser.c0.C0Parser;
 import org.jalgo.module.am0c0.gui.EditorView;
 import org.jalgo.module.am0c0.gui.jeditor.JEditor;
+import org.jalgo.module.am0c0.gui.jeditor.JEditor.LineType;
 import org.jalgo.module.am0c0.gui.jeditor.jedit.tokenmarker.AM0TokenMarker;
 import org.jalgo.module.am0c0.gui.jeditor.jedit.tokenmarker.CTokenMarker;
 
@@ -442,6 +443,7 @@ public class Editor extends Subcontroller {
 	}
 
 	public void setAM0Program(AM0Program am0program) {
+		getView().codeField.setLineType(LineType.NORMAL);
 		getView().codeField.updateModel(am0program);
 		getView().tabPane.setTitleAt(0, Messages.getString("am0c0", "Editor.5"));
 		setState(new StateNotValidatedAM0());
