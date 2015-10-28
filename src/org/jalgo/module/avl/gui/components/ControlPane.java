@@ -267,7 +267,7 @@ implements GUIConstants {
 			"avl", "ControlPane.Anim_speed_tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
 		animSpeed.addMouseListener(action);
 		animSpeed.setAlignmentX(Component.LEFT_ALIGNMENT);
-		animSpeed.setEnabled(false);
+		animSpeed.setEnabled(true);
 		add(animSpeed);
 	}
 

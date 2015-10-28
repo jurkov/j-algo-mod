@@ -41,6 +41,7 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 
 import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 
 import org.jalgo.main.gui.JAlgoGUIConnector;
 import org.jalgo.main.util.Messages;
@@ -97,9 +98,12 @@ implements DisplayModeChangeable, GraphicsConstants {
 	private int BALANCE_RED_HEIGHT;
 
 	//animation stuff, currently deactivated in order to release a stable version
-//	private boolean animMode = false;
-//	private Animator animator;
-//	private boolean doAnimIfNecessary;
+	private boolean animMode = false;
+	private Animator animator;
+	private boolean doAnimIfNecessary;
+	
+	private int top_node_x;
+	private int top_node_key;
 
 	/**
 	 * Constructs a <code>PaintArea</code> object with the given references.
@@ -174,25 +178,27 @@ implements DisplayModeChangeable, GraphicsConstants {
 	 * the offscreen image to the screen <code>graphics</code> object.
 	 */
 	public void paint(Graphics g) {
-/*		if (animMode) {
+		if (animMode) {
 			if (animator.isRunning()) {
 				g.drawImage(offI, 0, 0, this);
 				return;
 			}
 			animMode = false;
 			animator = null;
-		}*/
+		}
 
-		offG.setColor(Color.WHITE);
-		offG.fillRect(0, 0, width, height);
+		drawWhiteBackground();
+		
 		drawTree();
 		drawWorkingNode();
 				
 		g.drawImage(offI, 0, 0, this);
 
-/*		if (animMode) {
+		if (animMode) {
 			animator.start();
-		}*/
+		}
+		
+		
 	}
 	
 	/**
@@ -219,6 +225,12 @@ implements DisplayModeChangeable, GraphicsConstants {
 		return MARGIN_TOP[Settings.getDisplayMode()]+
 			(tree.getLevelFor(node)-1)*Y_DIST_NODES[Settings.getDisplayMode()];
 	}
+	
+	public void drawWhiteBackground()
+	{
+		offG.setColor(Color.WHITE);
+		offG.fillRect(0, 0, width, height);
+	}
 
 	/**
 	 * Iterates over the nodes of the tree in post order and draws the nodes and
@@ -232,19 +244,53 @@ implements DisplayModeChangeable, GraphicsConstants {
 
 		int x;
 		int y;
+		int key;
 		Node currentNode;
-
-		for (int i=0; i<nodePostOrder.size(); i++) {
-			currentNode = nodePostOrder.get(i);
-			x=getXFor(currentNode);
-			y=getYFor(currentNode);
-			if (currentNode != tree.getRoot())
-				drawLine(x, y,
-						getXFor(currentNode.getParent()),
-						getYFor(currentNode.getParent()),currentNode);
-			drawNode(x, y, currentNode);
-			drawNodeDecorations(x, y, currentNode);
+		
+		
+		x = getXFor(tree.getRoot());
+		key = tree.getRoot().getKey();
+		if(top_node_x!=0 && top_node_key!=0)
+		{
+			//JOptionPane.showMessageDialog(null, "old: " + top_node_x + " new: " +  x + " " + tree.getRoot().getKey());
+			if(x!=this.top_node_x)
+			{
+				if(top_node_key==key)
+				{
+					//JOptionPane.showMessageDialog(null, "old: " + top_node_x + " new: " +  x + " " + tree.getRoot().getKey());
+					int calc_x = x-top_node_x;
+					if (doAnimIfNecessary) {
+						
+						animMode = true;
+						//TODO: register animator in guicontroller for stopping
+						animator = new ShiftLeftRightAnimator(this, offG, tree.getRoot(), calc_x);
+						doAnimIfNecessary = false;
+					}
+				}
+			}
 		}
+		
+		if(true)
+		{
+			for (int i=0; i<nodePostOrder.size(); i++) {
+				currentNode = nodePostOrder.get(i);
+				x=getXFor(currentNode);
+				y=getYFor(currentNode);
+				
+				currentNode.setX(x);
+				currentNode.setY(y);
+				
+				if (currentNode != tree.getRoot())
+					drawLine(x, y,
+							getXFor(currentNode.getParent()),
+							getYFor(currentNode.getParent()),currentNode);
+				drawNode(x, y, currentNode);
+				drawNodeDecorations(x, y, currentNode);
+			}
+		}
+		
+		this.top_node_x = x;
+		this.top_node_key = key;
 	}
 
 	/**
@@ -267,6 +313,7 @@ implements DisplayModeChangeable, GraphicsConstants {
 				getYFor(node.getParent())+dy,
 				node);
 		drawNode(x+dx, y+dy, node);
+		drawNodeDecorations(x+dx, y+dy, node);
 	}
 
 	/**
@@ -332,16 +379,24 @@ implements DisplayModeChangeable, GraphicsConstants {
 		//Zeichnen der Rotationspfeile
 		if ((node.getVisualizationStatus()&Visualizable.ROTATE_LEFT_ARROW) != 0) {
 			drawLeftRotationArrow(x, y, node);
-//			if (doAnimIfNecessary) {
-//				animMode = true;
+			if (doAnimIfNecessary) {
+				animMode = true;
 				//TODO: register animator in guicontroller for stopping
-//				animator = new RotateLeftAnimator(this, offG, node);
-//				doAnimIfNecessary = false;
-//			}
+				animator = new RotateLeftAnimator(this, offG, node);
+				doAnimIfNecessary = false;
+			}
 		}
 		else {
 			if ((node.getVisualizationStatus()&Visualizable.ROTATE_RIGHT_ARROW) != 0)
+			{
 				drawRightRotationArrow(x, y, node);
+				if (doAnimIfNecessary) {
+					animMode = true;
+					//TODO: register animator in guicontroller for stopping
+					animator = new RotateRightAnimator(this, offG, node);
+					doAnimIfNecessary = false;
+				}
+			}
 		}
 	}
 	
@@ -602,7 +657,7 @@ implements DisplayModeChangeable, GraphicsConstants {
 		nodeInOrder = tree.exportInOrder();
 		nodePostOrder = tree.exportPostOrder();
 		scrollWorkNodeToCenter();
-//		doAnimIfNecessary = true;
+		doAnimIfNecessary = true;
 		repaint();
 	}
 

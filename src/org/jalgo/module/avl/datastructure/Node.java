@@ -42,6 +42,8 @@ implements Visualizable, Constants {
 	protected int key;
 	protected int visualizationStatus;
 	protected int height;
+	protected int x;
+	protected int y;
 
 	/**
 	 * Constructs a <code>Node</code> object with the given key. A call to
@@ -199,5 +201,25 @@ implements Visualizable, Constants {
 		if (other == null) return false;
 		if (other instanceof Node) return (key == ((Node)other).key);
 		return false;
+	}
+	
+	public void setX(int x)
+	{
+		this.x = x;
+	}
+	
+	public void setY(int y)
+	{
+		this.y = y;
+	}
+	
+	public int getX()
+	{
+		return this.x;
+	}
+	
+	public int getY()
+	{
+		return this.y;
 	}
 }
