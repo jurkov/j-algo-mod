@@ -1,5 +1,6 @@
 package org.jalgo.module.dijkstra.gui.components;
 
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -253,5 +254,20 @@ implements Observer, KeyListener, ActionListener, FocusListener {
 	 */
 	public void focusLost(FocusEvent e) {
 		fireChangedEvent();
+	}
+	
+	/**
+	 * Updates font size.
+	 * @param size
+	 */
+	public void setFontSize(int size)
+	{
+		Font f = textFields[0][0].getFont();
+		Font n = new Font(f.getName(),f.getStyle(),size);
+		for (int y=0; y<9; y++) {
+			for (int x=0; x<9; x++) {
+				textFields[y][x].setFont(n);
+			}
+		}
 	}
 }

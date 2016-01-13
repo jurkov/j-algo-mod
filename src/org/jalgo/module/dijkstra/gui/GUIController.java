@@ -3,6 +3,7 @@ package org.jalgo.module.dijkstra.gui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,9 +16,12 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.jalgo.main.gui.JAlgoGUIConnector;
 import org.jalgo.main.gui.components.JToolbarButton;
@@ -68,6 +72,12 @@ implements Observer {
 	private JButton editGraphButton;
 	private JLabel statusLabel;
 	
+
+	private NodeListPanel nodeListPane;
+	private EdgeListPanel edgeListPane;
+	private MatrixPanel matrixPane;
+	
+	
 	public GUIController(ModuleConnector connector, Controller controller) {
 		this.controller = controller;
 		// get the relevant components from the main program
@@ -109,6 +119,25 @@ implements Observer {
 		redoButton.addActionListener(toolbarActionHandler);
 		redoButton.addMouseListener(StatusLineUpdater.getInstance());
 		toolbar.add(redoButton);
+		
+		JSlider zoom = new JSlider(0,40);
+		zoom.setValue(0);
+		zoom.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				JSlider s = (JSlider) e.getSource();
+				
+				nodeListPane.setFontSize(s.getValue()+12);
+				edgeListPane.setFontSize(s.getValue()+12);
+				matrixPane.setFontSize(s.getValue()+12);
+				
+				nodeListPane.updateUI();
+				matrixPane.updateUI();
+			}
+		});
+		zoom.setMaximumSize(new Dimension(128, 128));
+		toolbar.add(zoom);
 	}
 
 	private void createEditModePanel() {
@@ -122,11 +151,11 @@ implements Observer {
 		JPanel rightPane = new JPanel(new BorderLayout());
 		JPanel innerRightPane = new JPanel();
 		innerRightPane.setLayout(new BoxLayout(innerRightPane, BoxLayout.PAGE_AXIS));
-		NodeListPanel nodeListPane = new NodeListPanel(controller);
+		nodeListPane = new NodeListPanel(controller);
 		innerRightPane.add(nodeListPane);
-		EdgeListPanel edgeListPane = new EdgeListPanel(controller);
+		edgeListPane = new EdgeListPanel(controller);
 		innerRightPane.add(edgeListPane);
-		MatrixPanel matrixPane = new MatrixPanel(controller);
+		matrixPane = new MatrixPanel(controller);
 		innerRightPane.add(matrixPane);
 		rightPane.add(innerRightPane, BorderLayout.CENTER);
 

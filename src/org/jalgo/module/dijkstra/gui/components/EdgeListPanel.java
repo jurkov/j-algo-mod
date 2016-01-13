@@ -1,6 +1,7 @@
 package org.jalgo.module.dijkstra.gui.components;
 
 import java.awt.BorderLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
@@ -62,7 +63,7 @@ implements Observer {
 		});
 		buttonPane.add(applyButton, BorderLayout.EAST);
 		add(buttonPane, BorderLayout.SOUTH);
-
+		
 		controller.addObserver(this);
 	}
 
@@ -88,5 +89,16 @@ implements Observer {
 		if (o == null) return;
 
 		textArea.setText(((Controller)o).getGraph().getEdgeListText());
+	}
+	
+	/**
+	 * Updates font size.
+	 * @param size
+	 */
+	public void setFontSize(int size)
+	{
+		Font x = textArea.getFont();
+		Font n = new Font(x.getName(), x.getStyle(), size);
+		textArea.setFont(n);
 	}
 }

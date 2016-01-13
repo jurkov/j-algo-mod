@@ -2,6 +2,7 @@ package org.jalgo.module.dijkstra.gui.components;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
@@ -79,5 +80,19 @@ implements Observer {
 		if (o == null) return;
 
 		textField.setText(((Controller)o).getGraph().getNodeListText());
+	}
+	
+	/**
+	 * Updates font size.
+	 * @param size
+	 */
+	public void setFontSize(int size)
+	{ 
+		Font x = textField.getFont();
+		Font n = new Font(x.getName(), x.getStyle(), size);
+		textField.setFont(n);
+		
+		setMaximumSize(new Dimension(
+				getMaximumSize().width, size));
 	}
 }
