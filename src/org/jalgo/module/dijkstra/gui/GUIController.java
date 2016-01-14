@@ -72,11 +72,13 @@ implements Observer {
 	private JButton editGraphButton;
 	private JLabel statusLabel;
 	
-
 	private NodeListPanel nodeListPane;
 	private EdgeListPanel edgeListPane;
 	private MatrixPanel matrixPane;
 	
+	private AlgorithmModeToolPanel toolPane;
+	private AlgorithmCalculationTablePanel calcTablePane;
+	private AlgorithmResultTablePanel resultTablePane;
 	
 	public GUIController(ModuleConnector connector, Controller controller) {
 		this.controller = controller;
@@ -128,12 +130,17 @@ implements Observer {
 			public void stateChanged(ChangeEvent e) {
 				JSlider s = (JSlider) e.getSource();
 				
-				nodeListPane.setFontSize(s.getValue()+12);
-				edgeListPane.setFontSize(s.getValue()+12);
-				matrixPane.setFontSize(s.getValue()+12);
+				nodeListPane.setFontSize(s.getValue()+14);
+				edgeListPane.setFontSize(s.getValue()+14);
+				matrixPane.setFontSize(s.getValue()+14);
+				calcTablePane.setFontSize(s.getValue()+14);
+				resultTablePane.setFontSize(s.getValue()+14);
 				
 				nodeListPane.updateUI();
 				matrixPane.updateUI();
+				
+				calcTablePane.updateUI();
+				resultTablePane.updateUI();
 			}
 		});
 		zoom.setMaximumSize(new Dimension(128, 128));
@@ -185,17 +192,17 @@ implements Observer {
 		algModePane = new JPanel(new BorderLayout());
 		JPanel contentPane = new JPanel(new GridLayout(1, 2));
 		algModeLeftPane = new JPanel(new BorderLayout());
-		AlgorithmModeToolPanel toolPane = new AlgorithmModeToolPanel(controller);
+		toolPane = new AlgorithmModeToolPanel(controller);
 		algModeLeftPane.add(toolPane, BorderLayout.NORTH);
 		contentPane.add(algModeLeftPane);
 
 		JPanel rightPane = new JPanel(new BorderLayout());
 		JPanel innerRightPane = new JPanel(new BorderLayout());
 		JPanel tablePane = new JPanel(new GridLayout(2, 1));
-		AlgorithmCalculationTablePanel calcTablePane =
+		calcTablePane =
 			new AlgorithmCalculationTablePanel(controller);
 		tablePane.add(calcTablePane);
-		AlgorithmResultTablePanel resultTablePane =
+		resultTablePane =
 			new AlgorithmResultTablePanel(controller);
 		tablePane.add(resultTablePane);
 		innerRightPane.add(tablePane, BorderLayout.CENTER);

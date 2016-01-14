@@ -91,8 +91,5 @@ implements Observer {
 		Font x = textField.getFont();
 		Font n = new Font(x.getName(), x.getStyle(), size);
 		textField.setFont(n);
-		
-		setMaximumSize(new Dimension(
-				getMaximumSize().width, size));
 	}
 }

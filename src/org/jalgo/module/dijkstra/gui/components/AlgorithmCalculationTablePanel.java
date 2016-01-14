@@ -2,6 +2,7 @@ package org.jalgo.module.dijkstra.gui.components;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -22,6 +23,7 @@ import org.jalgo.module.dijkstra.gui.Controller;
  */
 public class AlgorithmCalculationTablePanel
 extends JPanel {
+	private JTable table;
 
 	public AlgorithmCalculationTablePanel(Controller controller) {
 		setBorder(BorderFactory.createTitledBorder(new EtchedBorder(),
@@ -29,7 +31,7 @@ extends JPanel {
 				"AlgorithmModeCalculationTablePanel.Calc_table"))); //$NON-NLS-1$
 		setLayout(new BorderLayout());
 
-		JTable table = new JTable(new CalculationTableModel(controller));
+		table = new JTable(new CalculationTableModel(controller));
 		table.getColumnModel().getColumn(0).setPreferredWidth(50);
 		table.getColumnModel().getColumn(1).setPreferredWidth(300);
 		table.getTableHeader().setReorderingAllowed(false);
@@ -38,5 +40,17 @@ extends JPanel {
 		scrollPane.getViewport().setBackground(Color.WHITE);
 
 		add(scrollPane, BorderLayout.CENTER);
+	}
+	
+	/**
+	 * Updates font size.
+	 * @param size
+	 */
+	public void setFontSize(int size)
+	{
+		Font x = table.getFont();
+		Font n = new Font(x.getName(), x.getStyle(), size);
+		table.setFont(n);
+		table.setRowHeight(size);
 	}
 }
